@@ -2,7 +2,7 @@
 Summary: Implementation of CDMA
 Name: libcdma
 Version: 1.0
-Release: 1
+Release: 2
 License: MIT
 %global libcdma_version 1
 
@@ -65,6 +65,9 @@ ln -sf libcdma.so.%{libcdma_version} libcdma.so
 %{_libdir}/libcdma.so
 
 %changelog
+* Mon Nov 17 2025 Zhipeng Lu <luzhipeng8@h-partners.com> - 1.0-2
+- fix wait cqe and unregister ras
+
 * Thu Nov 6 2025 Zhipeng Lu <luzhipeng8@h-partners.com> - 1.0-1
 - Support resource creation and destruction in CDMA
   user mode, enabling read and write semantic functions
