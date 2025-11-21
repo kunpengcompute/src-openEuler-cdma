@@ -2,7 +2,7 @@
 Summary: Implementation of CDMA
 Name: libcdma
 Version: 1.0
-Release: 2
+Release: 3
 License: MIT
 %global libcdma_version 1
 
@@ -20,9 +20,6 @@ This implementation provides CDMA sending and reception.
 
 %package devel
 Summary:  Implementation of CDMA(UB) - Tools and header files for developers
-Group:    Development/Libraries/C
-BuildRequires: pkgconfig
-Requires: libcdma = %{version}-%{release}
 
 %description devel
 This package is required to develop alternate clients for cdma.
@@ -62,9 +59,13 @@ ln -sf libcdma.so.%{libcdma_version} libcdma.so
 
 %files devel
 %{_includedir}/cdma_u_lib.h
-%{_libdir}/libcdma.so
+%{_includedir}/cdma_abi.h
+%{_libdir}/libcdma.so*
 
 %changelog
+* Fri Nov 21 2025 Zhipeng Lu <luzhipeng8@h-partners.com> - 1.0-3
+- add cdma_abi.h to devel package
+
 * Mon Nov 17 2025 Zhipeng Lu <luzhipeng8@h-partners.com> - 1.0-2
 - fix wait cqe and unregister ras
 
