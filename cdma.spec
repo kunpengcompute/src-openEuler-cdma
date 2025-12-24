@@ -1,7 +1,7 @@
 Summary: Implementation of CDMA
 Name: libcdma
-Version: 1.0.1
-Release: 0
+Version: 1.0.2
+Release: 1
 License: MIT
 %global major_version 1
 
@@ -66,6 +66,9 @@ cmake --install build --prefix=%{buildroot}/usr
 %doc %{_docdir}/ub/%{name}/*
 
 %changelog
+* Wed Dec 24 2025 Zhipeng Lu <luzhipeng8@h-partners.com> - 1.0.2-1
+- add ioctl logs and error codes
+
 * Tue Dec 9 2025 Zhipeng Lu <luzhipeng8@h-partners.com> - 1.0.1-0
 - add version and fix some format and add doc to devel package
 - change the compile command and the usage of so
