@@ -1,7 +1,7 @@
 Summary: Implementation of CDMA
 Name: libcdma
 Version: 1.0.1
-Release: 1
+Release: 2
 License: MIT
 %global major_version 1
 
@@ -66,6 +66,9 @@ cmake --install build --prefix=%{buildroot}/usr
 %doc %{_docdir}/ub/%{name}/*
 
 %changelog
+* Wed Jan 14 2026 Zhipeng Lu <luzhipeng8@h-partners.com> - 1.0.1-2
+- merge master to Next
+
 * Tue Jan 13 2026 Zhipeng Lu <luzhipeng8@h-partners.com> - 1.0.1-1
 - cdma debug ability enhance and add some log print
 - jfs 64K page table memory adaptation
