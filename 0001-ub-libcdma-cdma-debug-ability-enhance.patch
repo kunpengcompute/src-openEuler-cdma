@@ -1,0 +1,432 @@
+From 5c5c0f4ff374d4977627e7881e0596d4076e5c57 Mon Sep 17 00:00:00 2001
+From: Zhipeng Lu <luzhipeng8@h-partners.com>
+Date: Thu, 8 Jan 2026 14:06:05 +0800
+Subject: [PATCH] ub: libcdma: cdma debug ability enhance and add some log
+ print
+
+driver inclusion
+category: bugfix
+bugzilla: https://atomgit.com/openeuler/cdma/issues/8
+CVE: NA
+
+-----------------------------------------------------------
+
+cdma debug ability enhance and add some log print and fix
+some warnings
+
+Signed-off-by: Zhipeng Lu <luzhipeng8@h-partners.com>
+---
+ cdma_u_cmd.c    | 24 ++++++++++++++++++++----
+ cdma_u_common.h |  4 ++--
+ cdma_u_db.c     | 13 +++++++++++++
+ cdma_u_event.c  | 10 +++++++++-
+ cdma_u_jfc.c    | 13 +++++++------
+ cdma_u_jfs.c    | 50 ++++++++++++++++++++++++-------------------------
+ cdma_u_queue.c  | 13 ++++++++-----
+ cdma_u_tp.c     |  2 +-
+ 8 files changed, 85 insertions(+), 44 deletions(-)
+
+diff --git a/cdma_u_cmd.c b/cdma_u_cmd.c
+index 2433f99..22bac37 100644
+--- a/cdma_u_cmd.c
++++ b/cdma_u_cmd.c
+@@ -63,6 +63,7 @@ dma_status cdma_cas(struct dma_queue *queue, struct dma_seg *rmt_seg,
+ 	struct cdma_u_queue *cdma_queue;
+ 	dma_sge_t rmt_sge, local_sge;
+ 	dma_jfs_wr_t *bad_wr = NULL;
++	dma_tp_cfg_t *cfg;
+ 	int ret;
+ 
+ 	if (cdma_rw_check(rmt_seg, local_seg)) {
+@@ -86,9 +87,12 @@ dma_status cdma_cas(struct dma_queue *queue, struct dma_seg *rmt_seg,
+ 	}
+ 
+ 	cdma_queue = to_cdma_u_queue(queue);
++	cfg = &cdma_queue->cdma_tp->cfg;
++
+ 	ret = cdma_u_post_jfs_wr(cdma_queue->cdma_jfs, &wr, &bad_wr);
+ 	if (ret) {
+-		CDMA_LOG_ERR("post jfs for cas failed, ret = %d.\n", ret);
++		CDMA_LOG_ERR("post jfs for cas failed, ret = %d, seid = %u, deid = %u.\n",
++			     ret, cfg->seid, cfg->deid);
+ 		return DMA_STATUS_INVAL;
+ 	}
+ 
+@@ -102,6 +106,7 @@ dma_status cdma_faa(struct dma_queue *queue, struct dma_seg *rmt_seg,
+ 	struct cdma_u_queue *cdma_queue;
+ 	dma_sge_t rmt_sge, local_sge;
+ 	dma_jfs_wr_t *bad_wr = NULL;
++	dma_tp_cfg_t *cfg;
+ 	int ret;
+ 
+ 	if (cdma_rw_check(rmt_seg, local_seg)) {
+@@ -118,9 +123,12 @@ dma_status cdma_faa(struct dma_queue *queue, struct dma_seg *rmt_seg,
+ 	wr.faa.operand = operand;
+ 
+ 	cdma_queue = to_cdma_u_queue(queue);
++	cfg = &cdma_queue->cdma_tp->cfg;
++
+ 	ret = cdma_u_post_jfs_wr(cdma_queue->cdma_jfs, &wr, &bad_wr);
+ 	if (ret) {
+-		CDMA_LOG_ERR("post jfs for faa failed, ret = %d.\n", ret);
++		CDMA_LOG_ERR("post jfs for faa failed, ret = %d, seid = %u, deid = %u.\n",
++			     ret, cfg->seid, cfg->deid);
+ 		return DMA_STATUS_INVAL;
+ 	}
+ 
+@@ -135,6 +143,7 @@ dma_status cdma_write(struct dma_queue *queue, struct dma_seg *rmt_seg,
+ 	struct cdma_u_queue *cdma_queue;
+ 	dma_sge_t rmt_sge, local_sge;
+ 	dma_jfs_wr_t *bad_wr = NULL;
++	dma_tp_cfg_t *cfg;
+ 	int ret;
+ 
+ 	if (cdma_rw_check(rmt_seg, local_seg)) {
+@@ -161,9 +170,12 @@ dma_status cdma_write(struct dma_queue *queue, struct dma_seg *rmt_seg,
+ 	wr.rw.dst.sge = &rmt_sge;
+ 
+ 	cdma_queue = to_cdma_u_queue(queue);
++	cfg = &cdma_queue->cdma_tp->cfg;
++
+ 	ret = cdma_u_post_jfs_wr(cdma_queue->cdma_jfs, &wr, &bad_wr);
+ 	if (ret) {
+-		CDMA_LOG_ERR("post jfs for write failed, ret = %d.\n", ret);
++		CDMA_LOG_ERR("post jfs for write failed, ret = %d, seid = %u, deid = %u.\n",
++			     ret, cfg->seid, cfg->deid);
+ 		return DMA_STATUS_INVAL;
+ 	}
+ 
+@@ -177,6 +189,7 @@ dma_status cdma_read(struct dma_queue *queue, struct dma_seg *rmt_seg,
+ 	struct cdma_u_queue *cdma_queue;
+ 	dma_sge_t rmt_sge, local_sge;
+ 	dma_jfs_wr_t *bad_wr = NULL;
++	dma_tp_cfg_t *cfg;
+ 	int ret;
+ 
+ 	if (cdma_rw_check(rmt_seg, local_seg)) {
+@@ -195,9 +208,12 @@ dma_status cdma_read(struct dma_queue *queue, struct dma_seg *rmt_seg,
+ 	wr.rw.dst.sge = &local_sge;
+ 
+ 	cdma_queue = to_cdma_u_queue(queue);
++	cfg = &cdma_queue->cdma_tp->cfg;
++
+ 	ret = cdma_u_post_jfs_wr(cdma_queue->cdma_jfs, &wr, &bad_wr);
+ 	if (ret) {
+-		CDMA_LOG_ERR("post jfs for read failed, ret = %d.\n", ret);
++		CDMA_LOG_ERR("post jfs for read failed, ret = %d, seid = %u, deid = %u.\n",
++			     ret, cfg->seid, cfg->deid);
+ 		return DMA_STATUS_INVAL;
+ 	}
+ 
+diff --git a/cdma_u_common.h b/cdma_u_common.h
+index 568dd2e..2313b07 100644
+--- a/cdma_u_common.h
++++ b/cdma_u_common.h
+@@ -63,7 +63,7 @@
+ 	offsetof(containing_type, member)
+ #define container_of(member_ptr, containing_type, member)	\
+ 	((containing_type *)					\
+-	((void *)(member_ptr)					\
++	((char *)(member_ptr)					\
+ 	- container_off(containing_type, member))		\
+ 	+ (uint8_t)check_types_match(*(member_ptr), ((containing_type *)0)->member))
+ #endif
+@@ -99,7 +99,7 @@ struct cdma_u_jetty_queue {
+ 	uintptr_t *wrid;
+ 	pthread_spinlock_t lock;
+ 	uint32_t max_inline_size;
+-	void *dwqe_addr;
++	void volatile *dwqe_addr;
+ 
+ 	uint32_t sqe_bb_cnt;
+ 	uint32_t max_sge_num;
+diff --git a/cdma_u_db.c b/cdma_u_db.c
+index a21b4ae..51e110f 100644
+--- a/cdma_u_db.c
++++ b/cdma_u_db.c
+@@ -190,6 +190,16 @@ out:
+ 	pthread_mutex_unlock(&ctx->page_mutex);
+ }
+ 
++static uint32_t cdma_get_dsqe_db_offset(struct cdma_u_context *cdma_ctx,
++					struct cdma_u_doorbell *db)
++{
++	if (db->type != CDMA_MMAP_JETTY_DSQE)
++		return 0;
++
++	return (db->id + 1) % (cdma_ctx->page_size / CDMA_HW_PAGE_SIZE) *
++	       CDMA_HW_PAGE_SIZE;
++}
++
+ int cdma_u_alloc_db(struct dma_context *ctx, struct cdma_u_doorbell *db)
+ {
+ 	struct cdma_u_context *cdma_ctx = to_cdma_u_ctx(ctx);
+@@ -204,6 +214,8 @@ int cdma_u_alloc_db(struct dma_context *ctx, struct cdma_u_doorbell *db)
+ 		return -EINVAL;
+ 	}
+ 
++	db->addr += cdma_get_dsqe_db_offset(cdma_ctx, db);
++
+ 	return 0;
+ }
+ 
+@@ -218,6 +230,7 @@ void cdma_u_free_db(struct dma_context *ctx, struct cdma_u_doorbell *db)
+ 
+ 	cdma_ctx = to_cdma_u_ctx(ctx);
+ 
++	db->addr -= cdma_get_dsqe_db_offset(cdma_ctx, db);
+ 	munmap((void *)db->addr, (size_t)cdma_ctx->page_size);
+ 	db->addr = NULL;
+ }
+diff --git a/cdma_u_event.c b/cdma_u_event.c
+index 2cc6308..c6822c1 100644
+--- a/cdma_u_event.c
++++ b/cdma_u_event.c
+@@ -70,8 +70,16 @@ static int cdma_cmd_get_async_event(struct cdma_u_context *u_ctx,
+ int cdma_poll_queue(struct dma_queue *queue, uint32_t cr_cnt, struct dma_cr *cr)
+ {
+ 	struct cdma_u_queue *cdma_queue = to_cdma_u_queue(queue);
++	dma_tp_cfg_t *cfg = &cdma_queue->cdma_tp->cfg;
++	int npolled;
+ 
+-	return cdma_u_poll_jfc(cdma_queue->cdma_jfc, cr_cnt, cr);
++	npolled = cdma_u_poll_jfc(cdma_queue->cdma_jfc, cr_cnt, cr);
++	if (npolled > 0 && cr->status != DMA_CR_SUCCESS) {
++		CDMA_LOG_ERR("poll jfc npolled = %d, seid = %u, deid = %u\n",
++			npolled, cfg->seid, cfg->deid);
++	}
++
++	return npolled;
+ }
+ 
+ int cdma_wait_queue(struct dma_queue *queue, uint32_t cr_cnt, int timeout,
+diff --git a/cdma_u_jfc.c b/cdma_u_jfc.c
+index 41b949f..ce0bbd2 100644
+--- a/cdma_u_jfc.c
++++ b/cdma_u_jfc.c
+@@ -48,7 +48,7 @@ static int cdma_u_alloc_jfc_buf(struct cdma_u_context *cdma_ctx,
+ 	ret = cdma_u_alloc_queue_buf(&jfc->cq, depth, cdma_ctx->cqe_size,
+ 								 CDMA_HW_PAGE_SIZE, false);
+ 	if (ret) {
+-		CDMA_LOG_ERR("alloc user jfc wqe buf failed.\n");
++		CDMA_LOG_ERR("alloc user jfc wqe buf failed, ret = %d.\n", ret);
+ 		return ret;
+ 	}
+ 
+@@ -298,8 +298,9 @@ static enum jfc_poll_state cdma_parse_cqe_for_jfc(struct cdma_u_jfc_cqe *cqe,
+ 	cr->user_ctx = queue->wrid[queue->ci & queue->baseblk_mask];
+ 
+ 	if (cqe->status) {
+-		CDMA_LOG_WARN("get sq %u cqe status abnormal, ci = %u, pi = %u.\n",
+-					  queue->idx, queue->ci, queue->pi);
++		CDMA_LOG_WARN("get sq %u cqe status abnormal, ci = %u,"
++			      " pi = %u, status = %u, substatus = %u.\n", queue->idx,
++			      queue->ci, queue->pi, cqe->status, cqe->substatus);
+ 	}
+ 
+ 	if (cdma_u_update_flush_cr(queue, cqe, cr))
+@@ -424,13 +425,13 @@ dma_jfc_t *cdma_u_create_jfc(struct dma_context *ctx, dma_jfc_cfg_t *cfg)
+ 
+ 	ret = cdma_u_alloc_jfc_buf(cdma_ctx, cfg, cdma_jfc);
+ 	if (ret) {
+-		CDMA_LOG_ERR("alloc jfc buf failed.\n");
++		CDMA_LOG_ERR("alloc jfc buf failed, ret = %d.\n", ret);
+ 		goto err_alloc_jfc;
+ 	}
+ 
+ 	ret = cdma_cmd_create_jfc(ctx, cdma_jfc, cfg);
+ 	if (ret) {
+-		CDMA_LOG_ERR("create jfc failed.\n");
++		CDMA_LOG_ERR("create jfc failed, ret = %d.\n", ret);
+ 		goto err_create_jfc;
+ 	}
+ 
+@@ -596,7 +597,7 @@ dma_status cdma_u_rearm_jfc(dma_jfc_t *jfc, bool solicited_only)
+ 	db.type = CDMA_CQ_ARM_DB;
+ 	db.jfcn = cdma_jfc->cq.idx;
+ 
+-	cdma_u_write64((uint64_t *)(cdma_ctx->db.addr + CDMA_JFC_HW_DB_OFFSET),
++	cdma_u_write64((uint64_t *)((char volatile *)cdma_ctx->db.addr + CDMA_JFC_HW_DB_OFFSET),
+ 				   (uint64_t *)&db);
+ 
+ 	return DMA_STATUS_OK;
+diff --git a/cdma_u_jfs.c b/cdma_u_jfs.c
+index 76659d6..2c5dc94 100644
+--- a/cdma_u_jfs.c
++++ b/cdma_u_jfs.c
+@@ -143,7 +143,7 @@ struct dma_jfs *cdma_u_create_jfs(struct dma_context *ctx,
+ 	if (cdma_u_alloc_db(ctx, &jfs->sq.db))
+ 		goto err_alloc_db;
+ 
+-	jfs->sq.dwqe_addr = (void *)jfs->sq.db.addr;
++	jfs->sq.dwqe_addr = jfs->sq.db.addr;
+ 
+ 	return &jfs->base;
+ 
+@@ -177,7 +177,7 @@ int cdma_u_delete_jfs(struct dma_jfs *jfs)
+ 
+ 	ret = cdma_u_cmd_delete_jfs(jfs);
+ 	if (ret)
+-		CDMA_LOG_WARN("cdma delete jfs cmd failed.\n");
++		CDMA_LOG_WARN("cdma delete jfs cmd failed, ret = %d.\n", ret);
+ 
+ 	if (!!jfs->jfs_cfg.jfc)
+ 		cdma_u_clean_jfc((dma_jfc_t *)jfs->jfs_cfg.jfc, jfs->jfs_id);
+@@ -251,7 +251,7 @@ static int cdma_u_fill_write_sqe(struct cdma_jfs_sqe_ctl *wqe_ctl,
+ 	struct cdma_wqe_sge *sge;
+ 	dma_sge_t *sge_info;
+ 
+-	sge = (struct cdma_wqe_sge *)((void *)wqe_ctl + cdma_get_ctl_len(wr->opcode));
++	sge = (struct cdma_wqe_sge *)((char *)wqe_ctl + cdma_get_ctl_len(wr->opcode));
+ 
+ 	if (cdma_fill_multi_sge(wqe_ctl, wr, sge)) {
+ 		CDMA_LOG_ERR("cdma fill sw sge invalid.\n");
+@@ -269,14 +269,15 @@ static int cdma_u_fill_write_sqe(struct cdma_jfs_sqe_ctl *wqe_ctl,
+ 				      (uint32_t)SQE_CTL_RMA_ADDR_BIT;
+ 
+ 	if (wr->opcode == CDMA_WR_OPC_WRITE_NOTIFY) {
+-		token_info = (struct cdma_token_info *)((void *)wqe_ctl + SQE_NOTIFY_TOKEN_ID_FIELD);
++		token_info = (struct cdma_token_info *)((char *)wqe_ctl +
++							SQE_NOTIFY_TOKEN_ID_FIELD);
+ 		token_info->token_id = wr->rw.notify_tokenid;
+ 		token_info->token_value = wr->rw.notify_tokenvalue;
+ 
+-		memcpy((void *)wqe_ctl + SQE_NOTIFY_ADDR_FIELD,
+-		       &wr->rw.notify_addr, sizeof(uint64_t));
+-		memcpy((void *)wqe_ctl + SQE_ATOMIC_DATA_FIELD,
+-		       &wr->rw.notify_data, sizeof(uint64_t));
++		memcpy((char *)wqe_ctl + SQE_NOTIFY_ADDR_FIELD, &wr->rw.notify_addr,
++		       sizeof(uint64_t));
++		memcpy((char *)wqe_ctl + SQE_ATOMIC_DATA_FIELD, &wr->rw.notify_data,
++		       sizeof(uint64_t));
+ 	}
+ 
+ 	return 0;
+@@ -398,15 +399,15 @@ static int cdma_u_fill_cas_sqe(struct cdma_jfs_sqe_ctl *wqe_ctl, dma_jfs_wr_t *w
+ 								  (uint32_t)SQE_CTL_RMA_ADDR_BIT;
+ 
+ 	if (sge->length <= CDMA_ATOMIC_LEN_8) {
+-		memcpy((void *)wqe_ctl + SQE_ATOMIC_DATA_FIELD,
+-			   &wr->cas.swap_data, sge->length);
+-		memcpy((void *)wqe_ctl + SQE_ATOMIC_DATA_FIELD + sge->length,
+-			   &wr->cas.cmp_data, sge->length);
++		memcpy((char *)wqe_ctl + SQE_ATOMIC_DATA_FIELD, &wr->cas.swap_data,
++		       sge->length);
++		memcpy((char *)wqe_ctl + SQE_ATOMIC_DATA_FIELD + sge->length,
++		       &wr->cas.cmp_data, sge->length);
+ 	} else {
+-		memcpy((void *)wqe_ctl + SQE_ATOMIC_DATA_FIELD,
+-			   (char *)wr->cas.swap_addr, sge->length);
+-		memcpy((void *)wqe_ctl + SQE_ATOMIC_DATA_FIELD + sge->length,
+-			   (char *)wr->cas.cmp_addr, sge->length);
++		memcpy((char *)wqe_ctl + SQE_ATOMIC_DATA_FIELD,
++		       (char *)wr->cas.swap_addr, sge->length);
++		memcpy((char *)wqe_ctl + SQE_ATOMIC_DATA_FIELD + sge->length,
++		       (char *)wr->cas.cmp_addr, sge->length);
+ 	}
+ 
+ 	return 0;
+@@ -438,11 +439,11 @@ static int cdma_u_fill_faa_sqe(struct cdma_jfs_sqe_ctl *wqe_ctl, dma_jfs_wr_t *w
+ 								  (uint32_t)SQE_CTL_RMA_ADDR_BIT;
+ 
+ 	if (sge->length <= CDMA_ATOMIC_LEN_8) {
+-		memcpy((void *)wqe_ctl + SQE_ATOMIC_DATA_FIELD,
+-			   &wr->faa.operand, sge->length);
++		memcpy((char *)wqe_ctl + SQE_ATOMIC_DATA_FIELD, &wr->faa.operand,
++		       sge->length);
+ 	} else {
+-		memcpy((void *)wqe_ctl + SQE_ATOMIC_DATA_FIELD,
+-			   (void *)wr->faa.operand_addr, sge->length);
++		memcpy((char *)wqe_ctl + SQE_ATOMIC_DATA_FIELD,
++		       (void *)wr->faa.operand_addr, sge->length);
+ 	}
+ 
+ 	return 0;
+@@ -486,10 +487,9 @@ static int cdma_set_sqe(struct cdma_jfs_sqe_ctl *wqe_ctl,
+ 	memcpy(wqe_ctl->rmt_eid, &wr->rmt_eid, sizeof(wr->rmt_eid));
+ 
+ 	ret = cdma_fill_normal_sge(wqe_ctl, wr);
+-	if (ret) {
+-		CDMA_LOG_ERR("cdma fill normal sge failed, opcode = %u in wr.\n",
+-					 (uint8_t)wr->opcode);
+-	}
++	if (ret)
++		CDMA_LOG_ERR("cdma fill normal sge failed, opcode = %u in wr, ret = %d.\n",
++			     (uint8_t)wr->opcode, ret);
+ 
+ 	return ret;
+ }
+@@ -586,7 +586,7 @@ static void cdma_write_dsqe(struct cdma_u_jetty_queue *sq,
+ 
+ static void cdma_update_sq_db(struct cdma_u_jetty_queue *sq)
+ {
+-	uint32_t *db_addr = (uint32_t *)(sq->db.addr + CDMA_DOORBELL_OFFSET);
++	uint32_t volatile *db_addr = (uint32_t volatile *)((char volatile *)sq->db.addr + CDMA_DOORBELL_OFFSET);
+ 	*db_addr = sq->pi;
+ }
+ 
+diff --git a/cdma_u_queue.c b/cdma_u_queue.c
+index ff10e92..8b71b2a 100644
+--- a/cdma_u_queue.c
++++ b/cdma_u_queue.c
+@@ -178,13 +178,15 @@ static int cdma_u_create_queue(struct dma_context *ctx, struct queue_cfg *cfg,
+ 
+ 	ret = cdma_u_alloc_jfc_res(ctx, cdma_queue, cfg, &jfc_cfg);
+ 	if (ret) {
+-		CDMA_LOG_ERR("cdma alloc jfc res, ret = %d.\n", ret);
++		CDMA_LOG_ERR("cdma alloc jfc res, ret = %d, seid = %u, deid = %u.\n",
++			     ret, tp_cfg.seid, tp_cfg.deid);
+ 		return ret;
+ 	}
+ 
+ 	cdma_queue->cdma_tp = cdma_u_create_ctp(ctx, &tp_cfg);
+ 	if (!cdma_queue->cdma_tp) {
+-		CDMA_LOG_ERR("cdma tp create failed.\n");
++		CDMA_LOG_ERR("cdma tp create failed, seid = %u, deid = %u.\n",
++			     tp_cfg.seid, tp_cfg.deid);
+ 		goto delete_jfc_res;
+ 	}
+ 
+@@ -193,7 +195,8 @@ static int cdma_u_create_queue(struct dma_context *ctx, struct queue_cfg *cfg,
+ 
+ 	cdma_queue->cdma_jfs = cdma_u_create_jfs(ctx, &jfs_cfg);
+ 	if (!cdma_queue->cdma_jfs) {
+-		CDMA_LOG_ERR("cdma jfs create failed.\n");
++		CDMA_LOG_ERR("cdma jfs create failed, seid = %u, deid = %u.\n",
++			     tp_cfg.seid, tp_cfg.deid);
+ 		goto delete_tp;
+ 	}
+ 
+@@ -232,14 +235,14 @@ struct dma_queue *cdma_alloc_queue(struct dma_context *ctx,
+ 
+ 	ret = cdma_u_cmd_create_queue(ctx, cdma_queue, cfg);
+ 	if (ret) {
+-		CDMA_LOG_ERR("cdma queue create failed.\n");
++		CDMA_LOG_ERR("cdma queue create failed, ret = %d.\n", ret);
+ 		free(cdma_queue);
+ 		return NULL;
+ 	}
+ 
+ 	ret = cdma_u_create_queue(ctx, cfg, cdma_queue->handle, cdma_queue);
+ 	if (ret) {
+-		CDMA_LOG_ERR("cdma create queue failed.\n");
++		CDMA_LOG_ERR("cdma create queue failed, ret = %d.\n", ret);
+ 		(void)cdma_u_cmd_delete_queue(cdma_queue);
+ 		free(cdma_queue);
+ 		return NULL;
+diff --git a/cdma_u_tp.c b/cdma_u_tp.c
+index 4ba20ff..823af9f 100644
+--- a/cdma_u_tp.c
++++ b/cdma_u_tp.c
+@@ -48,7 +48,7 @@ int cdma_u_delete_ctp(struct dma_tp *tp)
+ 
+ 	ret = cdma_cmd_delete_ctp(tp);
+ 	if (ret)
+-		CDMA_LOG_WARN("cdma delete tp cmd failed.\n");
++		CDMA_LOG_WARN("cdma delete tp cmd failed, ret = %d.\n", ret);
+ 
+ 	free(tp);
+ 
+-- 
+2.34.1
+
