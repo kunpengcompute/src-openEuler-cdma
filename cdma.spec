@@ -1,11 +1,12 @@
 Summary: Implementation of CDMA
 Name: libcdma
-Version: 1.0.2
+Version: 1.0.4
 Release: 2
 License: MIT
 %global major_version 1
 
 Source0: libcdma.tar.gz
+Patch1: 0001-ub-libcdma-cdma-debug-ability-enhance.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
@@ -36,6 +37,7 @@ asynchronous events.
 
 %prep
 %setup -q -n cdma
+%patch -P 1 -p1
 
 %build
 rm -rf build
@@ -66,8 +68,14 @@ cmake --install build --prefix=%{buildroot}/usr
 %doc %{_docdir}/ub/%{name}/*
 
 %changelog
-* Thu Mar 5 2026 Zhipeng Lu <luzhipeng8@h-partners.com> - 1.0.2-2
-- Synchronize to the SP3 branch
+* Tue Mar 10 2026 Zhipeng Lu <luzhipeng8@h-partners.com> - 1.0.4-2
+- cdma debug ability enhance
+
+* Tue Mar 10 2026 Zhipeng Lu <luzhipeng8@h-partners.com> - 1.0.4-1
+- rollback libcdma.tar.gz
+
+* Mon Mar 9 2026 Zhipeng Lu <luzhipeng8@h-partners.com> - 1.0.3-1
+- Sync bugfix patch to SP3
 
 * Wed Dec 24 2025 Zhipeng Lu <luzhipeng8@h-partners.com> - 1.0.2-1
 - add ioctl logs and error codes
