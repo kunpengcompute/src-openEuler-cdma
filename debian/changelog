@@ -1,3 +1,21 @@
+libcdma (1.0.4-2) unstable; urgency=medium
+
+  * cdma debug ability enhance
+
+ -- Zhipeng Lu <luzhipeng8@h-partners.com>  Tue, 10 Mar 2026 00:00:00 +0800
+
+libcdma (1.0.4-1) unstable; urgency=medium
+
+  * rollback libcdma.tar.gz
+
+ -- Zhipeng Lu <luzhipeng8@h-partners.com>  Tue, 10 Mar 2026 00:00:00 +0800
+
+libcdma (1.0.3-1) unstable; urgency=medium
+
+  * Sync bugfix patch to SP3
+
+ -- Zhipeng Lu <luzhipeng8@h-partners.com>  Mon, 09 Mar 2026 00:00:00 +0800
+
 libcdma (1.0.2-1) unstable; urgency=medium
 
   * Add ioctl logs and error codes
