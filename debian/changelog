@@ -1,0 +1,31 @@
+libcdma (1.0.2-1) unstable; urgency=medium
+
+  * Add ioctl logs and error codes
+
+ -- Zhipeng Lu <luzhipeng8@h-partners.com>  Wed, 24 Dec 2025 00:00:00 +0800
+
+libcdma (1.0.1-1) unstable; urgency=medium
+
+  * Add version and fix some format and add doc to devel package
+  * Change the compile command and the usage of so
+
+ -- Zhipeng Lu <luzhipeng8@h-partners.com>  Tue, 09 Dec 2025 00:00:00 +0800
+
+libcdma (1.0-3) unstable; urgency=medium
+
+  * Add cdma_abi.h to devel package
+
+ -- Zhipeng Lu <luzhipeng8@h-partners.com>  Fri, 21 Nov 2025 00:00:00 +0800
+
+libcdma (1.0-2) unstable; urgency=medium
+
+  * Fix wait cqe and unregister ras
+
+ -- Zhipeng Lu <luzhipeng8@h-partners.com>  Mon, 17 Nov 2025 00:00:00 +0800
+
+libcdma (1.0-1) unstable; urgency=medium
+
+  * Support resource creation and destruction in CDMA user mode,
+    enabling read and write semantic functions for CDMA user mode.
+
+ -- Zhipeng Lu <luzhipeng8@h-partners.com>  Thu, 06 Nov 2025 00:00:00 +0800
