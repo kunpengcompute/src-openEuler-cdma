@@ -1,0 +1,32 @@
+Source: libcdma
+Section: libs
+Priority: optional
+Maintainer: Zhipeng Lu <luzhipeng8@h-partners.com>
+Build-Depends: debhelper-compat (= 13),
+               cmake,
+               g++,
+               libummu-devel
+Standards-Version: 4.6.2
+Homepage: https://example.com/libcdma
+
+Package: libcdma
+Architecture: arm64
+Depends: ${shlibs:Depends}, ${misc:Depends}, libummu-devel
+Description: Implementation of CDMA
+ This implementation provides CDMA sending and reception.
+
+Package: libcdma-devel
+Section: libdevel
+Architecture: arm64
+Depends: libcdma (= ${binary:Version}), ${misc:Depends}
+Description: Implementation of CDMA(UB) - Tools and header files for developers
+ This package is required to develop alternate clients for cdma.
+ .
+ The libCDMA driver program is designed to implement the following two
+ functionalities:
+ .
+ 1. Memory verbs, which are one-sided operations including read, write,
+    and atomic operations.
+ .
+ 2. Event verbs, which involve registering callback functions with the
+    kernel-mode CDMA for post-processing asynchronous events.
