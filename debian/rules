@@ -4,15 +4,21 @@
 export CMAKE_BUILD_DIR := $(CURDIR)/build
 LIBCDMA_VERSION := $(shell dpkg-parsechangelog -S Version | cut -d- -f1)
 ABI_VERSION := 1
+PATCHES := \
+	../0001-ub-libcdma-cdma-debug-ability-enhance.patch
 %:
 	dh $@ --buildsystem=cmake --builddirectory=$(CMAKE_BUILD_DIR)
 
 override_dh_auto_configure:
+	@for patch in $(PATCHES); do \
+		patch -p1 < "$$patch" || exit 1; \
+	done
+
 	dh_auto_configure -- \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_INSTALL_LIBDIR=lib/$(DEB_HOST_MULTIARCH) \
 		-DPROJECT_VERSION=$(LIBCDMA_VERSION) \
-		-DLIB_SOVERSION=$(ABI_VERSION)
+		-DLIB_SOVERSION=$(ABI_VERSION) \
 		-DCMAKE_BUILD_TYPE=Release
 
 override_dh_auto_install:
@@ -22,4 +28,4 @@ override_dh_auto_install:
 	&& mv usr/lib64/* usr/lib/$(DEB_HOST_MULTIARCH)/ \
 	&& rmdir usr/lib64 \
 	&& cd usr/lib/$(DEB_HOST_MULTIARCH) \
-	&& ln -sf libcdma.so.$(LIBCDMA_VERSION) libcdma.so.$(ABI_VERSION) libcdma.so
+	&& ln -sf libcdma.so.$(LIBCDMA_VERSION) libcdma.so
