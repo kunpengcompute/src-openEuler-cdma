@@ -1,7 +1,7 @@
 Summary: Implementation of CDMA
 Name: libcdma
 Version: 1.0.4
-Release: 3
+Release: 4
 License: MIT
 %global major_version 1
 
@@ -66,6 +66,9 @@ cmake --install build --prefix=%{buildroot}/usr
 %doc %{_docdir}/ub/%{name}/*
 
 %changelog
+* Wed May 20 2026 Zhipeng Lu <luzhipeng8@h-partners.com> - 1.0.4-4
+- change cdma spec file name
+
 * Wed May 20 2026 Zhipeng Lu <luzhipeng8@h-partners.com> - 1.0.4-3
 - change source package name
 
