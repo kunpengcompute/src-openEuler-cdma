@@ -1,11 +1,11 @@
 Summary: Implementation of CDMA
 Name: libcdma
 Version: 1.0.4
-Release: 2
+Release: 3
 License: MIT
 %global major_version 1
 
-Source0: libcdma.tar.gz
+Source0: %{name}-%{version}.tar.gz
 Patch1: 0001-ub-libcdma-cdma-debug-ability-enhance.patch
 
 BuildRequires:  cmake
@@ -36,7 +36,7 @@ registering callback functions with the kernel-mode CDMA for post-processing
 asynchronous events.
 
 %prep
-%setup -q -n cdma
+%setup -q -n %{name}-%{version}
 %patch -P 1 -p1
 
 %build
@@ -68,6 +68,9 @@ cmake --install build --prefix=%{buildroot}/usr
 %doc %{_docdir}/ub/%{name}/*
 
 %changelog
+* Thu May 21 2026 Zhipeng Lu <luzhipeng8@h-partners.com> - 1.0.4-3
+- change cdma package and spec file name
+
 * Tue Mar 10 2026 Zhipeng Lu <luzhipeng8@h-partners.com> - 1.0.4-2
 - cdma debug ability enhance
 
