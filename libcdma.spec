@@ -1,11 +1,11 @@
 Summary: Implementation of CDMA
 Name: libcdma
 Version: 1.0.4
-Release: 2
+Release: 4
 License: MIT
 %global major_version 1
 
-Source0: libcdma.tar.gz
+Source0: %{name}-%{version}.tar.gz
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
@@ -35,7 +35,7 @@ registering callback functions with the kernel-mode CDMA for post-processing
 asynchronous events.
 
 %prep
-%setup -q -n cdma
+%setup -q -n %{name}-%{version}
 
 %build
 rm -rf build
@@ -66,6 +66,12 @@ cmake --install build --prefix=%{buildroot}/usr
 %doc %{_docdir}/ub/%{name}/*
 
 %changelog
+* Wed May 20 2026 Zhipeng Lu <luzhipeng8@h-partners.com> - 1.0.4-4
+- change cdma spec file name
+
+* Wed May 20 2026 Zhipeng Lu <luzhipeng8@h-partners.com> - 1.0.4-3
+- change source package name
+
 * Mon Apr 27 2026 Zhipeng Lu <luzhipeng8@h-partners.com> - 1.0.4-2
 - fix cdma code format issue
 
